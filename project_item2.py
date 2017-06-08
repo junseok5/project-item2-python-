@@ -503,7 +503,7 @@ def run_func(op_code_node):
             l_node = lookupTable(l_node.value)
         if r_node.type is TokenType.ID:
             r_node = lookupTable(r_node.value)
-        return Node(TokenType.INT, int((run_expr(l_node)).value)-int((run_expr(r_node)).value))
+        return Node(TokenType.INT, str(int((run_expr(l_node)).value)-int((run_expr(r_node)).value)))
 
     def multiple(node):
         l_node = node.value.next
@@ -512,7 +512,7 @@ def run_func(op_code_node):
             l_node = lookupTable(l_node.value)
         if r_node.type is TokenType.ID:
             r_node = lookupTable(r_node.value)
-        return Node(TokenType.INT, int((run_expr(l_node)).value)*int((run_expr(r_node)).value))
+        return Node(TokenType.INT, str(int((run_expr(l_node)).value)*int((run_expr(r_node)).value)))
 
     def divide(node):
         l_node = node.value.next
@@ -521,7 +521,7 @@ def run_func(op_code_node):
             l_node = lookupTable(l_node.value)
         if r_node.type is TokenType.ID:
             r_node = lookupTable(r_node.value)
-        return Node(TokenType.INT, int((run_expr(l_node)).value)/int((run_expr(r_node)).value))
+        return Node(TokenType.INT, str(int((run_expr(l_node)).value)/int((run_expr(r_node)).value)))
 
     def lt(node):
         l_node = node.value.next
