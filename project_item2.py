@@ -437,11 +437,12 @@ def run_func(op_code_node):
         return Node(TokenType.FALSE)
 
     # Fill Out
-    # table을 보고 함수를 작성하시오
+    # table을 보고 함수를 작성하시오--------------------------------------------------------------------------------------------
     def define(node):
         l_node = node.value.next
         r_node = l_node.next
-        insertTable(l_node.value, r_node.value)
+        new_r_node = (run_expr(r_node))
+        insertTable(l_node.value, new_r_node)
 
     def cond(node):
         l_node = node.value.next
@@ -464,21 +465,37 @@ def run_func(op_code_node):
     def plus(node):
         l_node = node.value.next
         r_node = l_node.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        if r_node.type is TokenType.ID:
+            r_node = lookupTable(r_node.value)
         return Node(TokenType.INT, int((run_expr(l_node)).value)+int((run_expr(r_node)).value))
 
     def minus(node):
         l_node = node.value.next
         r_node = l_node.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        if r_node.type is TokenType.ID:
+            r_node = lookupTable(r_node.value)
         return Node(TokenType.INT, int((run_expr(l_node)).value)-int((run_expr(r_node)).value))
 
     def multiple(node):
         l_node = node.value.next
         r_node = l_node.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        if r_node.type is TokenType.ID:
+            r_node = lookupTable(r_node.value)
         return Node(TokenType.INT, int((run_expr(l_node)).value)*int((run_expr(r_node)).value))
 
     def divide(node):
         l_node = node.value.next
         r_node = l_node.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        if r_node.type is TokenType.ID:
+            r_node = lookupTable(r_node.value)
         return Node(TokenType.INT, int((run_expr(l_node)).value)/int((run_expr(r_node)).value))
 
     def lt(node):
@@ -612,7 +629,7 @@ def print_node(node):
         else:
             for a in MyDiction:
                 if node.value == a:
-                    return lookupTable(node.value)
+                    return print_node(lookupTable(node.value))
                 else:
                     return node.value
     if node.type is TokenType.INT:
