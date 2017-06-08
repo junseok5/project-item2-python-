@@ -379,6 +379,10 @@ def run_func(op_code_node):
         """
         l_node = node.value.next
         r_node = l_node.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        if r_node.type is TokenType.ID:
+            r_node = lookupTable(r_node.value)
         r_node = run_expr(r_node)
         l_node = run_expr(l_node)
         new_r_node = r_node
@@ -390,7 +394,11 @@ def run_func(op_code_node):
         return create_new_quote_list(new_l_node, True)
 
     def car(node):
-        l_node = run_expr(node.value.next)
+        l_node = node.value.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        else:
+            l_node = run_expr(node.value.next)
         result = strip_quote(l_node).value
         if result.type is not TokenType.LIST:
             return result
@@ -401,12 +409,19 @@ def run_func(op_code_node):
         :type node: Node
         """
         l_node = node.value.next
-        l_node = run_expr(l_node)
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        else:
+            l_node = run_expr(l_node)
         new_r_node = strip_quote(l_node)
         return create_new_quote_list(new_r_node.value.next, True)
 
     def null_q(node):
-        l_node = run_expr(node.value.next)
+        l_node = node.value.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        else:
+            l_node = run_expr(node.value.next)
         new_l_node = strip_quote(l_node).value
         if new_l_node is None:
             return Node(TokenType.TRUE)
@@ -414,7 +429,11 @@ def run_func(op_code_node):
             return Node(TokenType.FALSE)
 
     def atom_q(node):
-        l_node = run_expr(node.value.next)
+        l_node = node.value.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        else:
+            l_node = run_expr(node.value.next)
         new_l_node = strip_quote(l_node)
 
         if new_l_node.type is TokenType.LIST:
@@ -427,9 +446,12 @@ def run_func(op_code_node):
     def eq_q(node):
         l_node = node.value.next
         r_node = l_node.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        if r_node.type is TokenType.ID:
+            r_node = lookupTable(r_node.value)
         new_l_node = strip_quote(run_expr(l_node))
         new_r_node = strip_quote(run_expr(r_node))
-
         if (new_l_node.type or new_r_node.type) is not TokenType.INT:
             return Node(TokenType.FALSE)
         if new_l_node.value == new_r_node.value:
@@ -446,6 +468,8 @@ def run_func(op_code_node):
 
     def cond(node):
         l_node = node.value.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
 
         if l_node is not None:
             return run_cond(l_node)
@@ -469,7 +493,8 @@ def run_func(op_code_node):
             l_node = lookupTable(l_node.value)
         if r_node.type is TokenType.ID:
             r_node = lookupTable(r_node.value)
-        return Node(TokenType.INT, int((run_expr(l_node)).value)+int((run_expr(r_node)).value))
+        return Node(TokenType.INT, str(int((run_expr(l_node)).value)+int((run_expr(r_node)).value)))
+
 
     def minus(node):
         l_node = node.value.next
@@ -501,6 +526,10 @@ def run_func(op_code_node):
     def lt(node):
         l_node = node.value.next
         r_node = l_node.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        if r_node.type is TokenType.ID:
+            r_node = lookupTable(r_node.value)
 
         if int((run_expr(l_node)).value) < int((run_expr(r_node)).value):
             return Node(TokenType.TRUE)
@@ -510,6 +539,10 @@ def run_func(op_code_node):
     def gt(node):
         l_node = node.value.next
         r_node = l_node.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        if r_node.type is TokenType.ID:
+            r_node = lookupTable(r_node.value)
 
         if int((run_expr(l_node)).value) > int((run_expr(r_node)).value):
             return Node(TokenType.TRUE)
@@ -519,6 +552,10 @@ def run_func(op_code_node):
     def eq(node):
         l_node = node.value.next
         r_node = l_node.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
+        if r_node.type is TokenType.ID:
+            r_node = lookupTable(r_node.value)
         if int((run_expr(l_node)).value) == int((run_expr(r_node)).value):
             return Node(TokenType.TRUE)
         else:
@@ -526,6 +563,8 @@ def run_func(op_code_node):
 
     def not_op(node):
         l_node = node.value.next
+        if l_node.type is TokenType.ID:
+            l_node = lookupTable(l_node.value)
         if (run_expr(l_node)).type is TokenType.FALSE:
             return Node(TokenType.TRUE)
         else:
