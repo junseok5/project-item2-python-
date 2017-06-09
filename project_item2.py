@@ -351,6 +351,8 @@ def run_list(root_node):
     :type root_node: Node
     """
     op_code_node = root_node.value
+    if (op_code_node.type is TokenType.LIST):
+        op_code_node = op_code_node.value
 
     return run_func(op_code_node)(root_node)
 
@@ -466,6 +468,18 @@ def run_func(op_code_node):
         new_r_node = (run_expr(r_node))
         insertTable(l_node.value, new_r_node)
 
+    def lambda_exe(node):
+        param = node.value.value.next.value
+        body = node.value.value.next.next
+        act_param = node.value.next
+
+        # 피라미터 바인딩
+        # new_act_param = (run_expr(act_param))
+        insertTable(param.value, act_param)
+
+        return run_expr(body)
+
+
     def cond(node):
         l_node = node.value.next
         if l_node.type is TokenType.ID:
@@ -489,6 +503,7 @@ def run_func(op_code_node):
     def plus(node):
         l_node = node.value.next
         r_node = l_node.next
+
         if l_node.type is TokenType.ID:
             l_node = lookupTable(l_node.value)
         if r_node.type is TokenType.ID:
@@ -611,6 +626,7 @@ def run_func(op_code_node):
     table['='] = eq
     table['cond'] = cond
     table['define'] = define
+    table['lambda'] = lambda_exe
     return table[op_code_node.value]
 
 
