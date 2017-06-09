@@ -475,7 +475,13 @@ def run_func(op_code_node):
 
         # 피라미터 바인딩
         # new_act_param = (run_expr(act_param))
-        insertTable(param.value, act_param)
+        while (param is not None):
+            insertTable(param.value, act_param)
+            if (param.next is not None):
+                param = param.next
+                act_param = act_param.next
+            else:
+                break;
 
         return run_expr(body)
 
