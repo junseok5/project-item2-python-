@@ -351,8 +351,10 @@ def run_list(root_node):
     :type root_node: Node
     """
     op_code_node = root_node.value
+
     if (op_code_node.type is TokenType.LIST):
-        op_code_node = op_code_node.value
+        if (op_code_node.value.type is TokenType.LAMBDA):
+            op_code_node = op_code_node.value
 
     return run_func(op_code_node)(root_node)
 
@@ -465,6 +467,10 @@ def run_func(op_code_node):
     def define(node):
         l_node = node.value.next
         r_node = l_node.next
+
+        # if (l_node.value.type is TokenType.LAMBDA):
+        #     insertTable(l_node.value, r_node)
+        # else:
         new_r_node = (run_expr(r_node))
         insertTable(l_node.value, new_r_node)
 
@@ -476,6 +482,8 @@ def run_func(op_code_node):
         # 피라미터 바인딩
         # new_act_param = (run_expr(act_param))
         while (param is not None):
+            if (act_param.type is TokenType.ID):
+                act_param = lookupTable(act_param.value)
             insertTable(param.value, act_param)
             if (param.next is not None):
                 param = param.next
