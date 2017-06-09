@@ -21,3 +21,8 @@
 return값으로 Node(TokenType.INT, int((run_expr(l_node)).value)*int((run_expr(r_node)).value))를 리턴한다. 근데 이 과정에서 
 value의 인자값으로 넘어가는 부분이 INT인 상태로 넘어가는데, INT상태로 넘어가면 eq_?에서 받을때 NODE 오브젝트를 받아서 같은지를
 판별할 수가 없었음. 그래서 str(int((run_expr(l_node)).value)*int((run_expr(r_node)).value)))로 바꾸면 eq_?가 정상적으로 작동한다. 이유는 아직 해결하지 못하였음.
+
+6/9(Fri)
+(commit log - "lambda commit")
+- lambda 간단한 소스 테스트
+- run_expr함수 과정에서 List가 두 개 들어갈시 오류가나서 수정해서 테스트한 결과 통과
