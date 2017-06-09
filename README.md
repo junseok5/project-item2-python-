@@ -26,3 +26,4 @@ value의 인자값으로 넘어가는 부분이 INT인 상태로 넘어가는데
 (commit log - "lambda commit")
 - lambda 간단한 소스 테스트
 - run_expr함수 과정에서 List가 두 개 들어갈시 오류가나서 수정해서 테스트한 결과 통과
+- 테스트 11번까지 통과
