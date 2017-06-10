@@ -466,6 +466,7 @@ def run_func(op_code_node):
 
         new_r_node = (run_expr(r_node))
         insertTable(l_node.value, new_r_node)
+        print lookupTable(l_node.value)
 
     def lambda_exe(node):
         # lambda 구조에 따른 값 전달
@@ -483,7 +484,7 @@ def run_func(op_code_node):
 
         # 피라미터 바인딩
         while (param is not None):
-            if (act_param.type is TokenType.ID):  # actual parameter가 변수 또는 함수일 경우
+            if (act_param.type is TokenType.ID):  # actual parameter가 저장되어 있는 변수 또는 함수일 경우
                 lookup_act_param = lookupTable(act_param.value)
                 insertTable(param.value, lookup_act_param)
             elif (act_param.type is TokenType.LIST):    # actual parameter이 함수일 경우
@@ -715,7 +716,8 @@ def print_node(node):
                 if node.value == a:
                     return print_node(lookupTable(node.value))
                 else:
-                    return node.value
+                    continue
+                return node.value
     if node.type is TokenType.INT:
         return node.value
     if node.type is TokenType.TRUE:
