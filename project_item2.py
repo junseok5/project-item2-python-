@@ -352,10 +352,6 @@ def run_list(root_node):
     """
     op_code_node = root_node.value
 
-    if (op_code_node.type is TokenType.LIST):
-        if (op_code_node.value.type is TokenType.LAMBDA):
-            op_code_node = op_code_node.value
-
     return run_func(op_code_node)(root_node)
 
 
@@ -468,23 +464,33 @@ def run_func(op_code_node):
         l_node = node.value.next
         r_node = l_node.next
 
-        # if (l_node.value.type is TokenType.LAMBDA):
-        #     insertTable(l_node.value, r_node)
-        # else:
         new_r_node = (run_expr(r_node))
         insertTable(l_node.value, new_r_node)
 
     def lambda_exe(node):
-        param = node.value.value.next.value
-        body = node.value.value.next.next
-        act_param = node.value.next
+        # lambda 구조에 따른 값 전달
+        param = node.value.next.value
+        if (node.value.next.next.value.type is TokenType.DEFINE):   # local 변수 정의가 존재한다면
+            local_vars = node.value.next.next
+            body = node.value.next.next.next
+        else:
+            body = node.value.next.next
+
+        if (node.next is not None):
+            act_param = node.next
+        else:
+            return node
 
         # 피라미터 바인딩
-        # new_act_param = (run_expr(act_param))
         while (param is not None):
-            if (act_param.type is TokenType.ID):
-                act_param = lookupTable(act_param.value)
-            insertTable(param.value, act_param)
+            if (act_param.type is TokenType.ID):  # actual parameter가 변수 또는 함수일 경우
+                lookup_act_param = lookupTable(act_param.value)
+                insertTable(param.value, lookup_act_param)
+            elif (act_param.type is TokenType.LIST):    # actual parameter이 함수일 경우
+                act_param = run_expr(act_param)
+                insertTable(param.value, act_param)
+            else:   # actual parameter가 숫자일 경우
+                insertTable(param.value, act_param)
             if (param.next is not None):
                 param = param.next
                 act_param = act_param.next
@@ -660,12 +666,21 @@ def run_expr(root_node):
     elif root_node.type is TokenType.FALSE:
         return root_node
     elif root_node.type is TokenType.LIST:
+        if (root_node.value.type is TokenType.LIST):    # lamda 함수 이용 시 괄호 두 개에 대한 입력 받을 시
+            return run_list(root_node.value)
+        if (root_node.value.value in MyDiction):     # root_node.value.value라는 이름을 가진 함수가 선언되어 있을 시
+            key = root_node.value.value
+            lambda_node = lookupTable(key)
+            act_parameter = root_node.value.next
+            lambda_node.next = act_parameter        # actual parameter 함수 뒤에 달아주기
+            root_node = lambda_node
         return run_list(root_node)
     else:
         print 'Run Expr Error'
     return None
 
 MyDiction = dict()
+
 def print_node(node):
     """
     "Evaluation 후 결과를 출력하기 위한 함수"
