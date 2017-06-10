@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from string import letters, digits, whitespace
 
-
+table = {}
 class CuteType:
     INT = 1
     ID = 4
@@ -346,16 +346,14 @@ class BasicPaser(object):
         return head
 
 
+
 def run_list(root_node):
     """
     :type root_node: Node
     """
     op_code_node = root_node.value
-
-    if (op_code_node.type is TokenType.LIST):
-        if (op_code_node.value.type is TokenType.LAMBDA):
-            op_code_node = op_code_node.value
-
+    if op_code_node.type is TokenType.LIST:
+        return run_list(op_code_node)
     return run_func(op_code_node)(root_node)
 
 
@@ -467,31 +465,30 @@ def run_func(op_code_node):
     def define(node):
         l_node = node.value.next
         r_node = l_node.next
-
-        # if (l_node.value.type is TokenType.LAMBDA):
-        #     insertTable(l_node.value, r_node)
-        # else:
         new_r_node = (run_expr(r_node))
+        if new_r_node.type is TokenType.LIST:
+            table[l_node.value] = lambda_call
         insertTable(l_node.value, new_r_node)
 
-    def lambda_exe(node):
-        param = node.value.value.next.value
-        body = node.value.value.next.next
-        act_param = node.value.next
+    def lambda_op(node):
+        l_node = node.value.next
+        r_node = l_node.next
+        input = node.next
+        if input is None:
+            return node
+        else:
+            insertTable(l_node.value.value, input)
+        return run_expr(r_node)
 
-        # 피라미터 바인딩
-        # new_act_param = (run_expr(act_param))
-        while (param is not None):
-            if (act_param.type is TokenType.ID):
-                act_param = lookupTable(act_param.value)
-            insertTable(param.value, act_param)
-            if (param.next is not None):
-                param = param.next
-                act_param = act_param.next
-            else:
-                break;
+    def lambda_call(node):
+        l_node = node.value
+        r_node = l_node.next
+        l_node = lookupTable(l_node.value)
+        l_node.next = r_node
+        return run_expr(l_node)
 
-        return run_expr(body)
+
+
 
 
     def cond(node):
@@ -517,7 +514,6 @@ def run_func(op_code_node):
     def plus(node):
         l_node = node.value.next
         r_node = l_node.next
-
         if l_node.type is TokenType.ID:
             l_node = lookupTable(l_node.value)
         if r_node.type is TokenType.ID:
@@ -621,7 +617,7 @@ def run_func(op_code_node):
         quote_list.next = new_value_list
         return wrapper_new_list
 
-    table = {}
+
     table['cons'] = cons
     table["'"] = quote
     table['quote'] = quote
@@ -640,7 +636,7 @@ def run_func(op_code_node):
     table['='] = eq
     table['cond'] = cond
     table['define'] = define
-    table['lambda'] = lambda_exe
+    table['lambda'] = lambda_op
     return table[op_code_node.value]
 
 
